@@ -1,0 +1,105 @@
+[
+    {
+        "id": "ec5a9bdc865f6d67",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "59757767166fdc60",
+        "type": "mqtt in",
+        "z": "ec5a9bdc865f6d67",
+        "name": "ESP32 MQTT",
+        "topic": "ahmm",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "mqtt_broker_id",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 210,
+        "y": 200,
+        "wires": [
+            [
+                "bb9d82f86828bf4f",
+                "edbdd2b77a093bb1"
+            ]
+        ]
+    },
+    {
+        "id": "bb9d82f86828bf4f",
+        "type": "function",
+        "z": "ec5a9bdc865f6d67",
+        "name": "Always Write CSV w/ Header",
+        "func": "const p = msg.payload;\n\nconst header = \"latitude,longitude,heartRate,spo2,ecg,temperature,pressure,uvIndex,accX,accY,accZ,gyroX,gyroY,gyroZ\\n\";\nconst csvLine = [\n    p.latitude,\n    p.longitude,\n    p.heartRate,\n    p.spo2 ?? \"\",\n    p.ecg,\n    p.temperature,\n    p.pressure,\n    p.uvIndex,\n    p.acceleration?.x,\n    p.acceleration?.y,\n    p.acceleration?.z,\n    p.gyroscope?.x,\n    p.gyroscope?.y,\n    p.gyroscope?.z\n].join(\",\") + \"\\n\";\n\n// Always write header + row (append mode)\nmsg.payload = header + csvLine;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 460,
+        "y": 200,
+        "wires": [
+            [
+                "b24dae7bc7515965"
+            ]
+        ]
+    },
+    {
+        "id": "b24dae7bc7515965",
+        "type": "file",
+        "z": "ec5a9bdc865f6d67",
+        "name": "CSV FILE",
+        "filename": "/Users/ayushdas/Documents/data.csv",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "utf8",
+        "x": 670,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "edbdd2b77a093bb1",
+        "type": "debug",
+        "z": "ec5a9bdc865f6d67",
+        "name": "debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "mqtt_broker_id",
+        "type": "mqtt-broker",
+        "name": "Public Broker",
+        "broker": "test.mosquitto.org",
+        "port": "1883",
+        "clientid": "NodeRED_Client",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": ""
+    }
+]
